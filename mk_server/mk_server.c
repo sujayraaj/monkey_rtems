@@ -38,6 +38,9 @@ __thread struct mk_server_timeout *server_timeout;
 /* Return the number of clients that can be attended  */
 unsigned int mk_server_capacity()
 {
+#ifdef __rtems__
+    return 512;
+#else
     int ret;
     int cur;
     struct rlimit lim;
@@ -63,6 +66,7 @@ unsigned int mk_server_capacity()
     }
 
     return cur;
+#endif
 }
 
 static inline
