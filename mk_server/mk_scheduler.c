@@ -32,7 +32,9 @@
 #include <monkey/mk_plugin_stage.h>
 
 #include <signal.h>
+#ifndef __rtems__
 #include <sys/syscall.h>
+#endif
 
 struct mk_sched_worker *sched_list;
 struct mk_sched_handler mk_http_handler;
