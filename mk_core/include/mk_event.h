@@ -63,6 +63,8 @@
 
 #if defined(__linux__) && !defined(LINUX_KQUEUE)
     #include "mk_event_epoll.h"
+#elif defined(__rtems__)
+    #include "mk_event_rtems.h"
 #else
     #include "mk_event_kqueue.h"
 #endif
