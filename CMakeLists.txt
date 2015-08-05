@@ -5,6 +5,11 @@ project(monkey C)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 set(CMAKE_INCLUDE_DIRECTORIES_BEFORE ON)
 
+if(PLATFORM STREQUAL "rtems")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/rtems/")
+find_package(RTEMS REQUIRED)
+else () 
+
 # CMake includes
 include(CheckSymbolExists)
 include(CheckLibraryExists)
@@ -326,3 +331,4 @@ add_subdirectory(include)
 install(DIRECTORY DESTINATION ${MK_PATH_LOG})
 install(DIRECTORY DESTINATION ${MK_PATH_PIDFILE})
 install(DIRECTORY DESTINATION ${MK_PATH_WWW})
+endif()
