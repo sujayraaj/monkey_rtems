@@ -1,0 +1,40 @@
+
+
+Monkey for rtems is built using cmake. cmake takes 5 arguments. 
+
+1. CMAKE_TOOLCHAIN_FILE : This force sets cmake to use the rtems compiler. If not used, cmake usually assumes it to be gcc, or if forcefully set, it exits
+                          after it fails to compile a default test case program. 
+                          A toolchain file RTEMS.tc , for rtems, is provided in cmake/rtems directory.
+
+2. RTEMS_TOOLS          : Specifies the location where the rtems-tools are installed
+
+3. BSP_DIR              : Specifies the location where the rtems bsp is installed
+
+4. CMAKE_INSTALL_PREFIX : Specifies where the header files and webserver data will be installed
+
+5. FILESYSTEM_DIR       : Specifies the directory of the file system in where the config and server files are stored.
+
+To build, cd into the build directory and :
+
+/*******************************************************************************************************************************************************/
+
+cmake .. \
+-DCMAKE_TOOLCHAIN_FILE=../cmake/rtems/RTEMS.tc \
+-DRTEMS_TOOLS=< rtems-tools-directory > \
+-DBSP_DIR=< bsp-install-directory > \
+-DCMAKE_INSTALL_PREFIX=< headers-and-files-isntallation-directory > \
+-DFILESYSTEM_DIR=< folder-in-filesystem-where-conf-are-located >
+
+make
+
+make install
+
+/*******************************************************************************************************************************************************/
+
+The files will be installed in the directory specified by the CMAKE_INSTALL_PREFIX.
+
+Notes:  
+Presently it is in the testing phase. The in-memory filesystem that gets loaded from the tar file has been hardcoded and is present as rtems_filesystem.c 
+and rtems_filesystem.h in the mk_bin directory. 
+****To build this successfully, the FILESYSTEM_DIR should be set only to "monkey_build/monkey_build" because this is what I initially used to run it.****
+The other variables except for toolchain file depends on what the user specifies. 
