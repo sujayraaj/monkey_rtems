@@ -100,7 +100,11 @@ static void mk_help(int rc)
 }
 
 /* MAIN */
+#ifdef __rtems__
+int monkey_main(int argc, char **argv)
+#else
 int main(int argc, char **argv)
+#endif
 {
     int opt;
     char *port_override = NULL;
@@ -305,14 +309,18 @@ int main(int argc, char **argv)
      */
     mk_server_setup();
 
+#ifndef __rtems__
     /* Register PID of Monkey */
     mk_utils_register_pid(mk_config->pid_file_path);
+#endif
 
     /* Print server details */
     mk_server_info();
 
+#ifndef __rtems__
     /* Change process owner */
     mk_user_set_uidgid();
+#endif
 
     /* Server loop, let's listen for incomming clients */
     mk_server_loop();
