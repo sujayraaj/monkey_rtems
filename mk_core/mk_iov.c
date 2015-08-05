@@ -37,6 +37,38 @@ const mk_ptr_t mk_iov_slash = mk_ptr_init(MK_IOV_SLASH);
 const mk_ptr_t mk_iov_none = mk_ptr_init(MK_IOV_NONE);
 const mk_ptr_t mk_iov_equal = mk_ptr_init(MK_IOV_EQUAL);
 
+#ifdef __rtems__
+ssize_t rtems_writev(int fd, const struct iovec *vector, int count){
+  char *buffer;
+  char *bp;
+  size_t bytes, to_copy, copied;
+  register size_t i;
+  /* Find the total number of bytes to be written. */
+  bytes = 0;
+  for (i = 0; i < count; ++i)
+  bytes += vector[i].iov_len;
+  /* Allocate a temporary buffer to hold the data. */
+  buffer = (char *) malloc(bytes);
+  /* Copy the data into BUFFER. */
+  to_copy = bytes;
+  bp = buffer;
+  for (i = 0; i < count; ++i)
+  {
+  #define	min(a, b) ((a) > (b) ? (b) : (a))
+  size_t copy = min(vector[i].iov_len, to_copy);
+  (void) memcpy( bp, vector[i].iov_base, copy);
+  bp += copy;
+  to_copy -= copy;
+  if (bytes == 0)
+  break;
+  }
+  copied = write(fd, buffer, bytes);
+  if(buffer) free(buffer);
+  return copied;
+}
+#endif
+
+
 struct mk_iov *mk_iov_create(int n, int offset)
 {
     int s_all;
@@ -112,7 +144,11 @@ int mk_iov_set_entry(struct mk_iov *mk_io, void *buf, int len,
 
 ssize_t mk_iov_send(int fd, struct mk_iov *mk_io)
 {
+#ifdef __rtems__
+    ssize_t n = rtems_writev(fd, mk_io->io, mk_io->iov_idx);
+#else
     ssize_t n = writev(fd, mk_io->io, mk_io->iov_idx);
+#endif
     if (mk_unlikely(n < 0)) {
         MK_TRACE( "[FD %i] writev() '%s'", fd, strerror(errno));
         return -1;
