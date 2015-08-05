@@ -171,7 +171,7 @@ add_definitions(-DMALLOC_LIBC)
 # ============================================
 
 # Default values for conf/monkey.conf
-set(MK_CONF_LISTEN       "10.1.2.5:2001")
+set(MK_CONF_LISTEN       "${NET_CFG_SELF_IP}:${NET_CFG_PORT}")
 set(MK_CONF_WORKERS      "8")
 set(MK_CONF_TIMEOUT      "15")
 set(MK_CONF_PIDFILE      "monkey.pid")
@@ -191,7 +191,7 @@ set(MK_CONF_FDT          "On")
 set(MK_CONF_OVERCAPACITY "Resist")
 
 # Default values for conf/sites/default
-set(MK_VH_SERVERNAME     "10.1.2.5")
+set(MK_VH_SERVERNAME     "${NET_CFG_SELF_IP}")
 set(MK_VH_DOCUMENT_ROOT  MK_DATADIR)
 set(MK_VH_LOG_ACCESS     MK_LOGDIR)
 set(MK_VH_LOG_ERROR      MK_LOGDIR)
@@ -210,30 +210,30 @@ if(BUILD_LOCAL)
 else()
   # Custom SYSCONFDIR
   if(NOT INSTALL_SYSCONFDIR)
-    set(MK_PATH_CONF monkey_build/monkey_build/etc/monkey CACHE STRING "Server configuration")
+    set(MK_PATH_CONF ${FILESYSTEM_DIR}/etc/monkey CACHE STRING "Server configuration")
   else()
-    set(MK_PATH_CONF monkey_build/monkey_build/etc/monkey CACHE STRING "Server configuration")
+    set(MK_PATH_CONF ${FILESYSTEM_DIR}/etc/monkey CACHE STRING "Server configuration")
   endif()
 
   # Custom LOGDIR
   if(NOT INSTALL_LOGDIR)
-    set(MK_PATH_LOG monkey_build/monkey_build/var/log/monkey CACHE STRING "Server logs")
+    set(MK_PATH_LOG ${FILESYSTEM_DIR}/var/log/monkey CACHE STRING "Server logs")
   else()
-    set(MK_PATH_LOG monkey_build/monkey_build/var/log/monkey CACHE STRING "Server logs")
+    set(MK_PATH_LOG ${FILESYSTEM_DIR}/var/log/monkey CACHE STRING "Server logs")
   endif()
 
   # Custom PIDFILE
   if(NOT PID_FILE)
-    set(MK_PATH_PIDFILE monkey_build/monkey_build/var/run CACHE STRING "Server PID")
+    set(MK_PATH_PIDFILE ${FILESYSTEM_DIR}/var/run CACHE STRING "Server PID")
   else()
-    set(MK_PATH_PIDFILE monkey_build/monkey_build/var/run CACHE STRING "Server PID")
+    set(MK_PATH_PIDFILE ${FILESYSTEM_DIR}/var/run CACHE STRING "Server PID")
   endif()
 
   # Custom WEBROOT
   if(NOT INSTALL_WEBROOTDIR)
-    set(MK_PATH_WWW monkey_build/monkey_build/var/www/monkey CACHE STRING "Server Web documents")
+    set(MK_PATH_WWW ${FILESYSTEM_DIR}/var/www/monkey CACHE STRING "Server Web documents")
   else()
-    set(MK_PATH_WWW monkey_build/monkey_build/var/www/monkey CACHE STRING "Server Web documents")
+    set(MK_PATH_WWW ${FILESYSTEM_DIR}/var/www/monkey CACHE STRING "Server Web documents")
   endif()
 
   # Headers
