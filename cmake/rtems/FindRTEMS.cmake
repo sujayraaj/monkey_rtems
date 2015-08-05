@@ -45,6 +45,7 @@ option(WITH_MUSL           "Enable Musl libc support"     No)
 option(WITH_BACKTRACE      "Enable Backtrace feature"     No)
 option(WITH_LINUX_TRACE    "Enable Lttng support"         No)
 option(WITH_PTHREAD_TLS    "Use old Pthread TLS mode"     No)
+option(WITH_SYSTEM_MALLOC "Use system memory allocator"  Yes)
 
 # Plugins: what should be build ?, these options
 # will be processed later on the plugins/CMakeLists.txt file
