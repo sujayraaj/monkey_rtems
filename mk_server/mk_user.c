@@ -88,6 +88,7 @@ int mk_user_init(struct mk_http_session *cs, struct mk_http_request *sr)
     return 0;
 }
 
+#ifndef __rtems__
 /* Change process user */
 int mk_user_set_uidgid()
 {
@@ -131,6 +132,7 @@ int mk_user_set_uidgid()
 
     return 0;
 }
+#endif
 
 /* Return process to the original user */
 int mk_user_undo_uidgid()
