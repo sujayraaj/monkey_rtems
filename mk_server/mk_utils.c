@@ -49,6 +49,29 @@ static const char mk_date_wd[][6]  = {"Sun, ", "Mon, ", "Tue, ", "Wed, ", "Thu, 
 static const char mk_date_ym[][5] = {"Jan ", "Feb ", "Mar ", "Apr ", "May ", "Jun ", "Jul ",
                                      "Aug ", "Sep ", "Oct ", "Nov ", "Dec "};
 
+#ifdef __rtems__
+time_t timegm(struct tm *tm)
+{
+    time_t ret;
+    char *tz;
+
+    tz = getenv("TZ");
+    setenv("TZ", "", 1);
+
+    tzset();
+
+    ret = mktime(tm);
+
+    if (tz)
+        setenv("TZ", tz, 1);
+    else
+        unsetenv("TZ");
+    tzset();
+
+    return ret;
+}
+#endif
+
 static int mk_utils_gmt_cache_get(char **data, time_t date)
 {
     unsigned int i;
