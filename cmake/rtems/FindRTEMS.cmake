@@ -66,6 +66,8 @@ option(WITHOUT_BIN               "Do not build binary"      No)
 option(WITHOUT_CONF              "Skip configuration files" No)
 option(WITH_STATIC_LIB_MODE      "Static library mode"     Yes)
 
+# SYSCALL
+add_definitions(-DHAVE_SYS_SYSCALL=0)
 # This variable allows to define a list of plugins that must
 # be included when building the project. The value are the plugins
 # names separated by a colon, e.g: -DWITH_PLUGINS=cgi,mbedtls

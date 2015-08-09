@@ -32,7 +32,7 @@
 #include <monkey/mk_plugin_stage.h>
 
 #include <signal.h>
-#ifndef __rtems__
+#if HAVE_SYS_SYSCALL
 #include <sys/syscall.h>
 #endif
 
