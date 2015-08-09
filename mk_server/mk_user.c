@@ -88,7 +88,6 @@ int mk_user_init(struct mk_http_session *cs, struct mk_http_request *sr)
     return 0;
 }
 
-#ifndef __rtems__
 /* Change process user */
 int mk_user_set_uidgid()
 {
@@ -96,22 +95,23 @@ int mk_user_set_uidgid()
 
     /* Launched by root ? */
     if (geteuid() == 0 && mk_config->user) {
+#ifndef __rtems__
         struct rlimit rl;
 
         if (getrlimit(RLIMIT_NOFILE, &rl)) {
             mk_warn("cannot get resource limits");
         }
-
+#endif
         /* Check if user exists  */
         if ((usr = getpwnam(mk_config->user)) == NULL) {
             mk_err("Invalid user '%s'", mk_config->user);
             goto out;
         }
-
+#ifndef __rtems__
         if (initgroups(mk_config->user, usr->pw_gid) != 0) {
             mk_err("Initgroups() failed");
         }
-
+#endif
         /* Change process UID and GID */
         if (setegid(usr->pw_gid) == -1) {
             mk_err("I cannot change the GID to %u", usr->pw_gid);
@@ -132,7 +132,6 @@ int mk_user_set_uidgid()
 
     return 0;
 }
-#endif
 
 /* Return process to the original user */
 int mk_user_undo_uidgid()

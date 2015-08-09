@@ -317,10 +317,8 @@ int main(int argc, char **argv)
     /* Print server details */
     mk_server_info();
 
-#ifndef __rtems__
     /* Change process owner */
     mk_user_set_uidgid();
-#endif
 
     /* Server loop, let's listen for incomming clients */
     mk_server_loop();
