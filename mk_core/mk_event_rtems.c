@@ -31,7 +31,7 @@
 #define set_nonblocking(fd) fcntl(fd, F_SETFL, fcntl(fd, F_GETFL,0) | O_NONBLOCK)
 #define set_blocking(fd) fcntl(fd, F_SETFL, fcntl(fd, F_GETFL,0) & ~O_NONBLOCK)
 
-
+// TODO: Working. But needs to be changed for a better alternative
 int socketpair_monkey(int fd[2]){
 
     int listener;
@@ -41,29 +41,50 @@ int socketpair_monkey(int fd[2]){
     int one = 1;
     int connect_done = 0;
     fd[0] = fd[1] = listener = -1;
+
     memset(&sock, 0, sizeof(sock));
-    if ((listener = socket(PF_INET, SOCK_STREAM, 0)) == -1) goto failed;
+
+    if ((listener = socket(PF_INET, SOCK_STREAM, 0)) == -1)
+        goto failed;
+
     setsockopt(listener,SOL_SOCKET,SO_REUSEADDR,(char *)&one,sizeof(one));
-    if (listen(listener, 1) != 0) goto failed;
-    if (getsockname(listener, &sock, &socklen) != 0) goto failed;
-    if ((fd[1] = socket(PF_INET, SOCK_STREAM, 0)) == -1) goto failed;
+
+    if (listen(listener, 1) != 0)
+        goto failed;
+
+    if (getsockname(listener, &sock, &socklen) != 0)
+        goto failed;
+
+    if ((fd[1] = socket(PF_INET, SOCK_STREAM, 0)) == -1)
+        goto failed;
+
     setsockopt(fd[1],SOL_SOCKET,SO_REUSEADDR,(char *)&one,sizeof(one));
+
     if (connect(fd[1],(struct sockaddr *)&sock,sizeof(sock)) == -1) {
-        if (errno != EINPROGRESS) goto failed;
-        MK_TRACE("ERRNO IS %d",errno==EINPROGRESS);
+        if (errno != EINPROGRESS)
+            goto failed;
     } else {
         connect_done = 1;
     }
+
     set_nonblocking(fd[1]);
-    if ((fd[0] = accept(listener, &sock, &len)) == -1) goto failed;
+
+    if ((fd[0] = accept(listener, &sock, &len)) == -1)
+        goto failed;
+
     setsockopt(fd[0],SOL_SOCKET,SO_REUSEADDR,(char *)&one,sizeof(one));
     close(listener);
+
     if (connect_done == 0) {
-        if (connect(fd[1],(struct sockaddr *)&sock,sizeof(sock)) != 0) goto failed;
+        if (connect(fd[1],(struct sockaddr *)&sock,sizeof(sock)) != 0)
+            goto failed;
     }
+
     set_blocking(fd[1]);
+
     /* all OK! */
     return 0;
+
     failed:
         if (fd[0] != -1) close(fd[0]);
         if (fd[1] != -1) close(fd[1]);
@@ -216,13 +237,8 @@ static inline int _mk_event_timeout_create(struct mk_event_ctx *ctx,
     event->type = MK_EVENT_NOTIFICATION;
     event->mask = MK_EVENT_EMPTY;
 
-#ifdef NOTE_SECONDS
-    /* FreeBSD or LINUX_KQUEUE defined */
     EV_SET(&ke, fd, EVFILT_TIMER, EV_ADD, NOTE_SECONDS, expire, event);
-#else
-    /* Other BSD have no NOTE_SECONDS & specify milliseconds */
-    EV_SET(&ke, fd, EVFILT_TIMER, EV_ADD, 0, expire * 1000, event);
-#endif
+
     ret = kevent(ctx->kfd, &ke, 1, NULL, 0, NULL);
     if (ret < 0) {
         close(fd);
@@ -230,10 +246,6 @@ static inline int _mk_event_timeout_create(struct mk_event_ctx *ctx,
         return -1;
     }
 
-    /*
-     * FIXME: the timeout event is not triggered when using libkqueue, need
-     * to confirm how it behave on native OSX.
-     */
     event->mask = MK_EVENT_READ;
     return fd;
 }
@@ -280,9 +292,5 @@ static inline int _mk_event_wait(struct mk_event_loop *loop)
 
 static inline char *_mk_event_backend()
 {
-#ifdef LINUX_KQUEUE
-    return "libkqueue";
-#else
     return "kqueue";
-#endif
 }

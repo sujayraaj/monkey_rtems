@@ -18,22 +18,13 @@
  */
 
 
-#ifndef MK_EVENT_KQUEUE_H
-#define MK_EVENT_KQUEUE_H
+#ifndef MK_EVENT_RTEMS_H
+#define MK_EVENT_RTEMS_H
 
-#ifndef __linux__
-   #include <sys/types.h>
-   #include <sys/event.h>
-   #include <sys/time.h>
-#endif
+#include <sys/event.h>
 
-#ifdef LINUX_KQUEUE
-   #include <kqueue/sys/event.h>
-
-   /* Not defined */
-   #ifndef NOTE_SECONDS
-      #define NOTE_SECONDS 0x00000001
-   #endif
+#ifndef NOTE_SECONDS
+    #define NOTE_SECONDS 0x00000001
 #endif
 
 struct mk_event_ctx {
